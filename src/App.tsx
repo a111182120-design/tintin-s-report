@@ -19,9 +19,9 @@ import {
 
 // --- Default Data ---
 const defaultProfile = {
-  name: '星野光 (Hikaru)',
-  age: '24',
-  gender: '女',
+  name: '陳奕廷 (yitin chen)',
+  age: '19',
+  gender: '男',
   personality: '充滿活力、喜歡冒險、幽默搞怪',
   health: '極佳！每天睡飽吃好吃滿 🍎',
   avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=ffdfbf'
