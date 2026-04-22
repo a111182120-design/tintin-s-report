@@ -1,0 +1,6 @@
+{
+  "name": "個人活潑名片 (Interactive Personal Profile)",
+  "description": "一個活潑且帶有動畫的個人網頁，包含可編輯的個人資訊（姓名、年齡、性別、個性、健康）、資歷與興趣篩選器、聯絡底部與互動按鈕。",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
