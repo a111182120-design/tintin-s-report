@@ -48,7 +48,7 @@ const experiences = [
 ];
 
 const interests = [
-  { id: 1, icon: Map, color: 'bg-blue-100 text-blue-600', title: '背包客旅行', desc: '迷路是旅行的意義，最喜歡沒有計畫的亂走。', image: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&q=80&w=800' },
+  { id: 1, icon: Map, color: 'bg-blue-100 text-blue-600', title: '背包客旅行', desc: '迷路是旅行的意義，最喜歡沒有計畫的亂走。', image: 'https://docs.google.com/presentation/d/1jK1VUsIgdwmydSlt9YdlTK8LJvI12MgSi9jnmSzICzU/edit?usp=sharing' },
   { id: 2, icon: Camera, color: 'bg-fuchsia-100 text-fuchsia-600', title: '底片攝影', desc: '把瞬間變成永恆，享受洗照片的開盲盒感。' },
   { id: 3, icon: Gamepad2, color: 'bg-emerald-100 text-emerald-600', title: '電玩重度成癮', desc: '主要玩任天堂大亂鬥，歡迎來找我單挑。' },
   { id: 4, icon: Utensils, color: 'bg-orange-100 text-orange-600', title: '拉麵鑑賞家', desc: '豚骨派不可逆轉，為了拉麵可以排隊兩小時。' },
