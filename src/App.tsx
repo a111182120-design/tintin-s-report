@@ -14,17 +14,31 @@ import {
   Save, 
   Sparkles, 
   User, 
-  Utensils 
+  Utensils,
+  Share2,
+  Check,
+  Link as LinkIcon
 } from 'lucide-react';
 
 // --- Default Data ---
 const defaultProfile = {
-  name: '星野光 (Hikaru)',
-  age: '24',
-  gender: '女',
+  name: '陳奕廷',
+  age: '19',
+  gender: '男',
   personality: '充滿活力、喜歡冒險、幽默搞怪',
   health: '極佳！每天睡飽吃好吃滿 🍎',
-  avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=ffdfbf'
+  avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=ffdfbf',
+  email: 'hello@example.com',
+  phone: '+886 912 345 678',
+  socialLink: 'https://instagram.com/hello'
+};
+
+const encodeData = (data: any) => {
+  try { return btoa(encodeURIComponent(JSON.stringify(data))); } catch(e) { return ''; }
+};
+
+const decodeData = (str: string) => {
+  try { return JSON.parse(decodeURIComponent(atob(str))); } catch(e) { return null; }
 };
 
 const experiences = [
@@ -43,10 +57,32 @@ const interests = [
 type FilterType = 'all' | 'experience' | 'interests';
 
 export default function App() {
-  const [profile, setProfile] = useState(defaultProfile);
+  const [profile, setProfile] = useState(() => {
+    try {
+      const hash = window.location.hash;
+      if (hash.startsWith('#p=')) {
+        const decoded = decodeData(hash.replace('#p=', ''));
+        if (decoded) return { ...defaultProfile, ...decoded };
+      }
+    } catch(e) {}
+    return defaultProfile;
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [filter, setFilter] = useState<FilterType>('all');
   const [showConfetti, setShowConfetti] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleSave = () => {
+    setIsEditing(false);
+    window.location.hash = `#p=${encodeData(profile)}`;
+  };
+
+  const copyLink = () => {
+    window.location.hash = `#p=${encodeData(profile)}`;
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -111,15 +147,30 @@ export default function App() {
           transition={{ duration: 0.6, type: 'spring', bounce: 0.4 }}
           className="geometric-card w-full bg-white relative overflow-hidden mb-12 p-8"
         >
-          {/* Edit Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsEditing(!isEditing)}
-            className="absolute top-6 right-6 px-4 py-2 bg-gb-sec-light font-bold text-gb-dark hover:bg-gb-accent hover:text-white transition-colors border-2 border-gb-dark rounded-none"
-          >
-            {isEditing ? <Save size={20} /> : <PenSquare size={20} />}
-          </motion.button>
+          {/* Action Buttons */}
+          <div className="absolute top-6 right-6 flex gap-3 z-10">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={copyLink}
+              className="px-4 py-2 bg-[#FFFCF2] font-bold text-gb-dark hover:bg-gb-accent hover:text-white transition-colors border-2 border-gb-dark rounded-none flex items-center gap-2"
+              title="複製專屬連結 (Copy Link)"
+            >
+              {copied ? <Check size={20} /> : <Share2 size={20} />}
+              <span className="hidden sm:inline">{copied ? '已複製！' : '複製連結'}</span>
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                if (isEditing) handleSave();
+                else setIsEditing(true);
+              }}
+              className="px-4 py-2 bg-gb-sec-light font-bold text-gb-dark hover:bg-gb-accent hover:text-white transition-colors border-2 border-gb-dark rounded-none flex items-center gap-2"
+            >
+              {isEditing ? <><Save size={20} /><span className="hidden sm:inline">儲存</span></> : <><PenSquare size={20} /><span className="hidden sm:inline">編輯</span></>}
+            </motion.button>
+          </div>
 
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
             {/* Avatar */}
@@ -195,6 +246,25 @@ export default function App() {
                         onChange={handleChange}
                         className="w-full text-xl font-bold editable-field"
                       />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-gb-accent uppercase tracking-widest">大頭貼網址 Avatar URL</label>
+                      <input type="text" name="avatar" value={profile.avatar} onChange={handleChange} className="w-full text-base font-medium editable-field" />
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <label className="text-xs font-bold text-gb-accent uppercase tracking-widest">Email</label>
+                        <input type="text" name="email" value={profile.email} onChange={handleChange} className="w-full text-base font-medium editable-field" />
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-xs font-bold text-gb-accent uppercase tracking-widest">Phone</label>
+                        <input type="text" name="phone" value={profile.phone} onChange={handleChange} className="w-full text-base font-medium editable-field" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gb-accent uppercase tracking-widest">社群連結 Social Link</label>
+                      <input type="text" name="socialLink" value={profile.socialLink} onChange={handleChange} className="w-full text-base font-medium editable-field" />
                     </div>
                   </motion.div>
                 ) : (
@@ -390,33 +460,33 @@ export default function App() {
               想要合作、一起打電動、或是揪我去吃拉麵？隨時歡迎聯絡我！
             </p>
             <div className="flex gap-4">
-              <motion.a whileHover={{ scale: 1.1, y: -2 }} href="#" className="p-3 geometric-card-small bg-[#FFFCF2] hover:bg-gb-accent hover:text-white transition-colors">
-                <Instagram size={24} />
+              <motion.a whileHover={{ scale: 1.1, y: -2 }} href={profile.socialLink || "#"} target="_blank" rel="noopener noreferrer" className="p-3 geometric-card-small bg-[#FFFCF2] hover:bg-gb-accent hover:text-white transition-colors">
+                <LinkIcon size={24} />
               </motion.a>
-              <motion.a whileHover={{ scale: 1.1, y: -2 }} href="#" className="p-3 geometric-card-small bg-[#FFFCF2] hover:bg-gb-accent hover:text-white transition-colors">
-                <MessageCircle size={24} />
+              <motion.a whileHover={{ scale: 1.1, y: -2 }} href={`mailto:${profile.email}`} className="p-3 geometric-card-small bg-[#FFFCF2] hover:bg-gb-accent hover:text-white transition-colors">
+                <Mail size={24} />
               </motion.a>
             </div>
           </div>
           
           <div className="space-y-4">
-            <a href="mailto:hello@example.com" className="geometric-card-small group flex flex-col md:flex-row items-center gap-4 text-gb-dark hover:text-white transition-colors p-6 bg-white hover:bg-gb-dark">
-              <div className="p-3 bg-gb-sec-light border-2 border-gb-dark group-hover:bg-gb-accent transition-colors">
+            <a href={`mailto:${profile.email}`} className="geometric-card-small group flex flex-col md:flex-row items-center gap-4 text-gb-dark hover:text-white transition-colors p-6 bg-white hover:bg-gb-dark truncate">
+              <div className="p-3 bg-gb-sec-light border-2 border-gb-dark group-hover:bg-gb-accent transition-colors shrink-0">
                 <Mail size={24} className="text-gb-dark group-hover:text-white" />
               </div>
-              <div className="flex-1 text-center md:text-left">
+              <div className="flex-1 text-center md:text-left min-w-0">
                 <span className="block font-bold text-gb-accent uppercase mb-1">Email</span>
-                <span className="font-bold text-lg tracking-normal">hello@example.com</span>
+                <span className="font-bold text-lg tracking-normal truncate block">{profile.email}</span>
               </div>
             </a>
             
-            <a href="tel:+886912345678" className="geometric-card-small group flex flex-col md:flex-row items-center gap-4 text-gb-dark hover:text-white transition-colors p-6 bg-white hover:bg-gb-dark">
-              <div className="p-3 bg-gb-sec-light border-2 border-gb-dark group-hover:bg-gb-accent transition-colors">
+            <a href={`tel:${profile.phone}`} className="geometric-card-small group flex flex-col md:flex-row items-center gap-4 text-gb-dark hover:text-white transition-colors p-6 bg-white hover:bg-gb-dark truncate">
+              <div className="p-3 bg-gb-sec-light border-2 border-gb-dark group-hover:bg-gb-accent transition-colors shrink-0">
                 <Phone size={24} className="text-gb-dark group-hover:text-white" />
               </div>
-              <div className="flex-1 text-center md:text-left">
+              <div className="flex-1 text-center md:text-left min-w-0">
                 <span className="block font-bold text-gb-accent uppercase mb-1">Phone</span>
-                <span className="font-bold text-lg tracking-normal">+886 912 345 678</span>
+                <span className="font-bold text-lg tracking-normal truncate block">{profile.phone}</span>
               </div>
             </a>
           </div>
