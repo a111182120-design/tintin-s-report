@@ -28,9 +28,9 @@ const defaultProfile = {
   personality: '充滿活力、喜歡冒險、幽默搞怪',
   health: '極佳！每天睡飽吃好吃滿 🍎',
   avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=ffdfbf',
-  email: 'hello@example.com',
+  email: 'a111182142@nkust.edu.tw',
   phone: '+886 912 345 678',
-  socialLink: 'https://instagram.com/hello'
+  socialLink: 'https://sites.google.com/nkust.edu.tw/a6541616316316?usp=sharing'
 };
 
 const encodeData = (data: any) => {
