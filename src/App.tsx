@@ -19,9 +19,9 @@ import {
 
 // --- Default Data ---
 const defaultProfile = {
-  name: '陳奕廷 (yitin chen)',
-  age: '19',
-  gender: '男',
+  name: '星野光 (Hikaru)',
+  age: '24',
+  gender: '女',
   personality: '充滿活力、喜歡冒險、幽默搞怪',
   health: '極佳！每天睡飽吃好吃滿 🍎',
   avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=ffdfbf'
@@ -34,7 +34,7 @@ const experiences = [
 ];
 
 const interests = [
-  { id: 1, icon: Map, color: 'bg-blue-100 text-blue-600', title: '背包客旅行', desc: '迷路是旅行的意義，最喜歡沒有計畫的亂走。' },
+  { id: 1, icon: Map, color: 'bg-blue-100 text-blue-600', title: '背包客旅行', desc: '迷路是旅行的意義，最喜歡沒有計畫的亂走。', image: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&q=80&w=800' },
   { id: 2, icon: Camera, color: 'bg-fuchsia-100 text-fuchsia-600', title: '底片攝影', desc: '把瞬間變成永恆，享受洗照片的開盲盒感。' },
   { id: 3, icon: Gamepad2, color: 'bg-emerald-100 text-emerald-600', title: '電玩重度成癮', desc: '主要玩任天堂大亂鬥，歡迎來找我單挑。' },
   { id: 4, icon: Utensils, color: 'bg-orange-100 text-orange-600', title: '拉麵鑑賞家', desc: '豚骨派不可逆轉，為了拉麵可以排隊兩小時。' },
@@ -365,6 +365,11 @@ export default function App() {
                           <h3 className="text-lg font-bold text-gb-dark mb-2 uppercase tracking-wide">{interest.title}</h3>
                           <p className="text-gb-sec-dark text-sm leading-relaxed font-medium">{interest.desc}</p>
                         </div>
+                        {interest.image && (
+                          <div className="w-full mt-2 border-2 border-gb-dark overflow-hidden aspect-video bg-gb-sec-light">
+                            <img src={interest.image} alt={interest.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                          </div>
+                        )}
                       </motion.div>
                     )
                   })}
