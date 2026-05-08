@@ -1,5 +1,11 @@
 import { AnimatePresence, motion } from 'motion/react';
 import React, { useState } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
 import { 
   Briefcase, 
   Camera, 
@@ -17,8 +23,17 @@ import {
   Utensils,
   Share2,
   Check,
-  Link as LinkIcon
+  Link as LinkIcon,
+  FileText,
+  Video
 } from 'lucide-react';
+
+import avatarImg from './231631.png';
+import travelPlanPdf from './2026 Qingming Festival Travel Plan.pdf';
+import vid1 from './1.mp4';
+import vid2 from './2.mp4';
+import vid3 from './3.mp4';
+import vid4 from './4.mp4';
 
 // --- Default Data ---
 const defaultProfile = {
@@ -27,10 +42,10 @@ const defaultProfile = {
   gender: '男',
   personality: '充滿活力、喜歡冒險、幽默搞怪',
   health: '極佳！每天睡飽吃好吃滿 🍎',
-  avatar: 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=ffdfbf',
-  email: 'a111182142@nkust.edu.tw',
+  avatar: avatarImg,
+  email: 'hello@example.com',
   phone: '+886 912 345 678',
-  socialLink: 'https://sites.google.com/nkust.edu.tw/a6541616316316?usp=sharing'
+  socialLink: 'https://instagram.com/hello'
 };
 
 const encodeData = (data: any) => {
@@ -41,6 +56,20 @@ const decodeData = (str: string) => {
   try { return JSON.parse(decodeURIComponent(atob(str))); } catch(e) { return null; }
 };
 
+const autobiographyText = `朋記欠跑花用聲村百；澡每歡兔眼做老房你雄可吹真走像牛；化何林走畫申，喜着穴旦跳國是共由歡，入點假清多木久棵。
+
+做游訴蝶孝流次清外真卜要唱！嗎鴨意音里、五次早止向雨干司，車采步牙金田怪原，圓向固結活雞追，林教他夏瓜米消秋得田，夏飽收澡停第？讀蝸土力六男支氣跟美新。
+
+重才筆遠者爪害。玩下個忍因在己跟飯，民丁世就習後米衣秋後乾是空，消戶音您結尤門杯士村弓唱這言內家視，消文犬刃村多弓星別書且時浪珠未們英。尾化比念勿洋牛讀比拍忍追蛋耍扒學害；又奶到，三上升黃急去兄青。
+
+別火步以鳥道占節畫鳥親書乞言交久南雨笑像。多天幾蝶汗魚虎東卜眼浪晚錯步南。几麼來斥，錯花抱風示頁尾南男瓜。身話唱鳥世位，浪豆昌飽地蛋荷飯課新王都，着冬來。
+
+耳水內後穴包！點同央收半夕消完蝶十借家蛋鳥它重「錯知几兔扒就又」亭辛勿有巾種己教才午肖雞、兒西畫力您辛足很文助往地員邊壯工知子能。遠外眼十河央借升正，圓動主我蝸羊尾車汗找像念？苗喝娘。
+
+免葉豆法飽麻可就。開右飯右。黑松怎「兄新朱」化邊很京明豆黃斗澡怪固泉出父亭；春頁苦尾南京像九兌冒刃知得，寫蛋只吹交亭耍口都游不開，步下瓜歡三吉牠登自海各那巾打男爬。
+
+木年兆陽亭來國大是看忍左，西共後眼身前。`;
+
 const experiences = [
   { id: 1, title: '首席歡樂長', company: '快樂無限股份有限公司', duration: '2022 - 至今', desc: '負責讓整間公司的同事每天都笑咪咪，偶爾兼職吃掉辦公室的所有零食。' },
   { id: 2, title: '前端魔法學徒', company: '霍格華茲科技', duration: '2020 - 2022', desc: '用 React 施展網頁魔法，雖然偶爾會出 bug 爆炸，但總是能化險為夷。' },
@@ -48,13 +77,49 @@ const experiences = [
 ];
 
 const interests = [
-  { id: 1, icon: Map, color: 'bg-blue-100 text-blue-600', title: '背包客旅行', desc: '迷路是旅行的意義，最喜歡沒有計畫的亂走。', image: 'https://docs.google.com/presentation/d/1jK1VUsIgdwmydSlt9YdlTK8LJvI12MgSi9jnmSzICzU/edit?usp=sharing' },
-  { id: 2, icon: Camera, color: 'bg-fuchsia-100 text-fuchsia-600', title: '底片攝影', desc: '把瞬間變成永恆，享受洗照片的開盲盒感。' },
+  { 
+    id: 1, 
+    icon: Map, 
+    color: 'bg-blue-100 text-blue-600', 
+    title: '背包客旅行', 
+    desc: '迷路是旅行的意義，最喜歡沒有計畫的亂走。',
+    image: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&q=80&w=800',
+    media: [
+      { type: 'pdf', src: travelPlanPdf, title: '2026 清明節旅遊計畫' },
+      { type: 'video', src: vid1 },
+      { type: 'video', src: vid2 },
+      { type: 'video', src: vid3 },
+      { type: 'video', src: vid4 }
+    ]
+  },
   { id: 3, icon: Gamepad2, color: 'bg-emerald-100 text-emerald-600', title: '電玩重度成癮', desc: '主要玩任天堂大亂鬥，歡迎來找我單挑。' },
   { id: 4, icon: Utensils, color: 'bg-orange-100 text-orange-600', title: '拉麵鑑賞家', desc: '豚骨派不可逆轉，為了拉麵可以排隊兩小時。' },
 ];
 
-type FilterType = 'all' | 'experience' | 'interests';
+type FilterType = 'all' | 'about' | 'experience' | 'interests';
+
+function PdfPages({ idx }: { idx: number }) {
+  const [numPages, setNumPages] = React.useState<number>(1);
+  React.useEffect(() => {
+    const handleLoaded = (e: CustomEvent) => {
+      if (e.detail.idx === idx) {
+        setNumPages(e.detail.numPages);
+      }
+    };
+    window.addEventListener('pdfLoaded', handleLoaded as any);
+    return () => window.removeEventListener('pdfLoaded', handleLoaded as any);
+  }, [idx]);
+
+  return (
+    <>
+      {Array.from(new Array(numPages), (el, index) => (
+        <React.Fragment key={`page_${index + 1}`}>
+          <Page pageNumber={index + 1} renderTextLayer={false} renderAnnotationLayer={false} width={500} className="border-2 border-gb-dark shadow-sm bg-white shrink-0 max-w-full" />
+        </React.Fragment>
+      ))}
+    </>
+  );
+}
 
 export default function App() {
   const [profile, setProfile] = useState(() => {
@@ -333,9 +398,10 @@ export default function App() {
 
         {/* --- Filters --- */}
         <div className="flex justify-center flex-wrap gap-4 mb-10">
-          {(['all', 'experience', 'interests'] as const).map((f) => {
+          {(['all', 'about', 'experience', 'interests'] as const).map((f) => {
             const labels = {
               all: '全部 (All)',
+              about: '自傳 (Autobiography)',
               experience: '資歷 (Seniority)',
               interests: '興趣 (Interests)'
             };
@@ -358,6 +424,29 @@ export default function App() {
         {/* --- Content Area --- */}
         <div className="space-y-12 mb-20 min-h-[400px]">
           
+          {/* About Section */}
+          <AnimatePresence mode="popLayout">
+            {(filter === 'all' || filter === 'about') && (
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 bg-gb-accent text-white geometric-card-small">
+                    <User size={24} />
+                  </div>
+                  <h2 className="text-2xl font-black text-gb-dark uppercase tracking-widest">自傳 Autobiography</h2>
+                </div>
+                
+                <div className="geometric-card w-full bg-white relative overflow-hidden p-8 leading-relaxed text-gb-dark font-medium whitespace-pre-line text-lg">
+                  {autobiographyText}
+                </div>
+              </motion.section>
+            )}
+          </AnimatePresence>
+
           {/* Experience Section */}
           <AnimatePresence mode="popLayout">
             {(filter === 'all' || filter === 'experience') && (
@@ -426,7 +515,7 @@ export default function App() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: i * 0.1 }}
-                        className="geometric-card-small bg-white p-6 flex flex-col items-start gap-4 hover:translate-y-[-4px] hover:translate-x-[4px] transition-transform"
+                        className={`geometric-card-small bg-white p-6 flex flex-col items-start gap-4 hover:translate-y-[-4px] hover:translate-x-[4px] transition-transform ${"media" in interest ? 'md:col-span-2' : ''}`}
                       >
                         <div className={`p-4 border-2 border-gb-dark ${interest.id % 2 === 0 ? 'bg-gb-sec-light' : 'bg-[#FFFCF2]'}`}>
                           <Icon size={28} className="text-gb-dark" />
@@ -435,9 +524,44 @@ export default function App() {
                           <h3 className="text-lg font-bold text-gb-dark mb-2 uppercase tracking-wide">{interest.title}</h3>
                           <p className="text-gb-sec-dark text-sm leading-relaxed font-medium">{interest.desc}</p>
                         </div>
-                        {interest.image && (
+                        {interest.image && !("media" in interest) && (
                           <div className="w-full mt-2 border-2 border-gb-dark overflow-hidden aspect-video bg-gb-sec-light">
                             <img src={interest.image} alt={interest.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                          </div>
+                        )}
+                        {("media" in interest) && interest.media && (
+                          <div className="w-full mt-4 space-y-4">
+                            {interest.media.map((m: any, idx: number) => {
+                              if (m.type === 'pdf') {
+                                return (
+                                  <div key={idx} className="w-full border-2 border-gb-dark overflow-hidden bg-gb-bg geometric-card-small flex flex-col">
+                                    <div className="bg-gb-dark text-white px-3 py-2 font-bold text-sm flex items-center justify-between">
+                                      <div className="flex items-center gap-2">
+                                        <FileText size={16} />
+                                        {m.title}
+                                      </div>
+                                      <a href={m.src} target="_blank" rel="noopener noreferrer" className="underline text-xs hover:text-gb-accent">開啟原檔</a>
+                                    </div>
+                                    <div className="w-full h-[500px] border-t-2 border-gb-dark overflow-auto bg-gb-sec-light p-4 flex flex-col items-center gap-4 custom-scrollbar">
+                                      <Document file={m.src} loading={<div className="font-bold py-10">載入 PDF 中...</div>} error={<div className="font-bold py-10 text-rose-500">無法預覽此 PDF</div>} onLoadSuccess={({ numPages }) => {
+                                        const event = new CustomEvent('pdfLoaded', { detail: { numPages, idx } });
+                                        window.dispatchEvent(event);
+                                      }}>
+                                        <PdfPages idx={idx} />
+                                      </Document>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              if (m.type === 'video') {
+                                return (
+                                  <div key={idx} className="w-full border-2 border-gb-dark overflow-hidden bg-gb-sec-dark geometric-card-small relative aspect-video">
+                                    <video src={m.src} controls className="w-full h-full object-cover bg-black" />
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
                           </div>
                         )}
                       </motion.div>
